@@ -12,13 +12,19 @@ def read_credentials(path: Path) -> dict[str, str]:
         if not line.strip() or line.lstrip().startswith("#"):
             continue
         if "=" not in line:
-            raise ValueError(f".env line {line_number}: expected KEY=value")
+            raise ValueError(f".env line {line_number}: expected KEY=<value>")
         key, value = line.split("=", 1)
         key = key.strip()
         if key not in {"WIFI_SSID", "WIFI_PASSWORD"}:
             raise ValueError(f".env line {line_number}: unknown key {key!r}")
         if key in values:
             raise ValueError(f".env line {line_number}: duplicate {key}")
+        value = value.strip()
+        if not (value.startswith("<") and value.endswith(">")):
+            raise ValueError(
+                f".env line {line_number}: {key} must use <value> delimiters"
+            )
+        value = value[1:-1]
         if any(char in value for char in ("\x00", "\r", "\n")):
             raise ValueError(f".env line {line_number}: invalid control character")
         values[key] = value
@@ -26,7 +32,7 @@ def read_credentials(path: Path) -> dict[str, str]:
     if not values.get("WIFI_SSID"):
         raise ValueError(".env: WIFI_SSID is required")
     if "WIFI_PASSWORD" not in values:
-        raise ValueError(".env: WIFI_PASSWORD is required (use an empty value for an open AP)")
+        raise ValueError(".env: WIFI_PASSWORD is required (use <> for an open AP)")
     if len(values["WIFI_SSID"].encode("utf-8")) > 32:
         raise ValueError(".env: WIFI_SSID exceeds 32 bytes")
     if len(values["WIFI_PASSWORD"].encode("utf-8")) > 64:

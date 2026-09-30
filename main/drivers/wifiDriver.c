@@ -19,6 +19,19 @@ static bool initialized;
 static bool started;
 static bool reconnectEnabled;
 
+static const char *disconnectReasonName(uint8_t reason)
+{
+    switch (reason) {
+    case WIFI_REASON_NO_AP_FOUND: return "network not found (check SSID and 2.4 GHz AP)";
+    case WIFI_REASON_AUTH_FAIL: return "authentication failed (check password)";
+    case WIFI_REASON_ASSOC_FAIL: return "association failed";
+    case WIFI_REASON_HANDSHAKE_TIMEOUT:
+    case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT: return "security handshake timed out";
+    case WIFI_REASON_AUTH_EXPIRE: return "authentication timed out";
+    default: return "see ESP-IDF Wi-Fi disconnect reason code";
+    }
+}
+
 static DriverStatus statusFromEspErr(esp_err_t error)
 {
     switch (error) {
@@ -46,7 +59,8 @@ static void wifiEventHandler(void *argument, esp_event_base_t eventBase,
         xEventGroupClearBits(connectionEvents, WIFI_CONNECTED_BIT);
         const wifi_event_sta_disconnected_t *disconnected = eventData;
         if (disconnected != NULL) {
-            ESP_LOGW(tag, "disconnected (reason %u, RSSI %d dBm)",
+            ESP_LOGW(tag, "disconnected: %s (reason %u, RSSI %d dBm)",
+                     disconnectReasonName(disconnected->reason),
                      disconnected->reason, disconnected->rssi);
         } else {
             ESP_LOGW(tag, "disconnected (reason unavailable)");
@@ -72,7 +86,7 @@ DriverStatus wifiInit(void)
         strlen(WIFI_PASSWORD) > 64 ||
         strcmp(WIFI_SSID, "YOUR_WIFI_SSID") == 0 ||
         strcmp(WIFI_PASSWORD, "YOUR_WIFI_PASSWORD") == 0) {
-        ESP_LOGE(tag, "set valid WIFI_SSID and WIFI_PASSWORD in config.h");
+        ESP_LOGE(tag, "set valid WIFI_SSID and WIFI_PASSWORD in .env (use <value> delimiters)");
         return DRIVER_INVALID_ARGUMENT;
     }
 

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (( $# > 1 )); then
+    echo "Usage: $0 [serial-port]" >&2
+    exit 2
+fi
+if ! command -v idf.py >/dev/null 2>&1; then
+    echo "idf.py not found. First source your ESP-IDF export.sh." >&2
+    exit 1
+fi
+if ! command -v script >/dev/null 2>&1; then
+    echo "script(1) not found. Install util-linux." >&2
+    exit 1
+fi
+
+project_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+mkdir -p -- "$project_dir/logs"
+log_file="$project_dir/logs/idf-$(date +%Y%m%d-%H%M%S)-$$.txt"
+
+if (( $# == 1 )); then
+    export ESPPORT=$1
+elif [[ -z ${ESPPORT:-} ]]; then
+    mapfile -t ports < <(find /dev -maxdepth 1 -type c \
+        \( -name 'ttyACM[0-9]*' -o -name 'ttyUSB[0-9]*' \) -print | sort)
+    if (( ${#ports[@]} == 0 )); then
+        echo "No serial port found (/dev/ttyACM* or /dev/ttyUSB*). Connect the board or pass a port." >&2
+        exit 1
+    fi
+    if (( ${#ports[@]} > 1 )); then
+        printf 'Multiple serial ports found; pass one explicitly:\n' >&2
+        printf '  %s\n' "${ports[@]}" >&2
+        exit 1
+    fi
+    export ESPPORT=${ports[0]}
+fi
+
+cd -- "$project_dir"
+echo "Using serial port: $ESPPORT"
+echo "Saving monitor output to: $log_file"
+NO_COLOR=1 script -q -f -e -O "$log_file" -c 'idf.py flash monitor --timestamps --disable-auto-color'

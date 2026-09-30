@@ -98,6 +98,34 @@ DriverStatus wifiSensingCalibrationStart(void)
     return DRIVER_OK;
 }
 
+DriverStatus wifiSensingCalibrationGetProgress(WifiSensingCalibrationProgress *progress)
+{
+    if (progress == NULL) {
+        return DRIVER_INVALID_ARGUMENT;
+    }
+    if (sensingHandle == NULL) {
+        return DRIVER_NOT_INITIALIZED;
+    }
+    if (!calibrating) {
+        return DRIVER_NOT_READY;
+    }
+    DriverStatus status = checkPeer();
+    if (status != DRIVER_OK) {
+        return status;
+    }
+
+    esp_wifi_sensing_fsm_channel_diag_t diagnostic = {0};
+    esp_err_t error = esp_wifi_sensing_fsm_get_channel_diag(sensingHandle, peerBssid, &diagnostic);
+    if (error != ESP_OK) {
+        return statusFromEspErr(error);
+    }
+    progress->sampleCount = diagnostic.train_sample_count;
+    progress->backgroundCount = diagnostic.train_background_count;
+    progress->trainStatus = diagnostic.train_status;
+    progress->lastAction = diagnostic.train_last_action;
+    return DRIVER_OK;
+}
+
 DriverStatus wifiSensingCalibrationStop(void)
 {
     if (sensingHandle == NULL) {
@@ -196,6 +224,9 @@ DriverStatus wifiSensingRead(WifiSensingMeasurement *measurement)
     measurement->calibrated = calibrated && diagnostic.train_thresholds_valid;
     measurement->jitter = diagnostic.jitter_value;
     measurement->wander = diagnostic.wander_value;
+    measurement->presenceReady = diagnostic.presence_ready;
+    measurement->presenceWanderAverage = diagnostic.presence_wander_average;
+    measurement->presenceSomeoneThreshold = diagnostic.presence_someone_threshold;
     measurement->motion = channelState == ESP_WIFI_SENSING_FSM_STATE_ACTIVE;
     measurement->presence = diagnostic.presence_ready &&
                             diagnostic.presence_someone_status;

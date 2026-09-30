@@ -8,6 +8,10 @@
 
 static const char *tag = "APP";
 
+#if SENSING_CALIBRATION_MAX_MS < SENSING_CALIBRATION_MS
+#error "SENSING_CALIBRATION_MAX_MS must be at least SENSING_CALIBRATION_MS"
+#endif
+
 void app_main(void)
 {
     DriverStatus status = wifiTaskStart();
@@ -27,7 +31,35 @@ void app_main(void)
         ESP_LOGE(tag, "calibration start failed (status %d)", status);
         return;
     }
-    vTaskDelay(pdMS_TO_TICKS(SENSING_CALIBRATION_MS));
+    TickType_t calibrationStarted = xTaskGetTickCount();
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        WifiSensingCalibrationProgress progress;
+        status = wifiSensingCalibrationGetProgress(&progress);
+        if (status != DRIVER_OK) {
+            ESP_LOGE(tag, "calibration progress unavailable (status %d)", status);
+            wifiSensingDeinit();
+            return;
+        }
+
+        TickType_t elapsed = xTaskGetTickCount() - calibrationStarted;
+        if (elapsed >= pdMS_TO_TICKS(SENSING_CALIBRATION_MS) && progress.sampleCount > 0 &&
+            progress.backgroundCount > 0) {
+            ESP_LOGI(tag, "calibration data ready: samples %u, background %u",
+                     (unsigned)progress.sampleCount, (unsigned)progress.backgroundCount);
+            break;
+        }
+        if (elapsed >= pdMS_TO_TICKS(SENSING_CALIBRATION_MS)) {
+            ESP_LOGW(tag, "calibration waiting: samples %u, background %u, status %d, action %d",
+                     (unsigned)progress.sampleCount, (unsigned)progress.backgroundCount,
+                     progress.trainStatus, progress.lastAction);
+        }
+        if (elapsed >= pdMS_TO_TICKS(SENSING_CALIBRATION_MAX_MS)) {
+            ESP_LOGE(tag, "calibration timed out without usable training data");
+            wifiSensingDeinit();
+            return;
+        }
+    }
     status = wifiSensingCalibrationStop();
     if (status != DRIVER_OK) {
         ESP_LOGE(tag, "calibration stop failed (status %d)", status);

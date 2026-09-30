@@ -6,3 +6,12 @@
 
 # Local build-time Wi-Fi credentials
 /.env
+
+# Local serial monitor captures
+/logs/
+
+# Local startup commands
+/startup
+
+# Local test notes
+/TEST_PLAN.md
