@@ -21,5 +21,5 @@ idf_component_register(
         "sensingTask.c"
         "drivers/wifiSensingDriver.c"
     INCLUDE_DIRS "." "${CMAKE_CURRENT_BINARY_DIR}"
-    REQUIRES esp_wifi esp_event esp_netif nvs_flash esp_wifi_sensing
+    REQUIRES esp_wifi esp_event esp_netif esp_timer nvs_flash esp_wifi_sensing
 )

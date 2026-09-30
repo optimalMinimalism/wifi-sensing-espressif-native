@@ -1,14 +1,24 @@
 #include "sensingTask.h"
 
+#include <stdint.h>
+
 #include "config.h"
 #include "drivers/wifiSensingDriver.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 static const char *tag = "APP";
 static TaskHandle_t sensingTaskHandle;
-TickType_t stateSince = xTaskGetTickCount();
+static const int64_t secondsPerUnit[] = {1, 60, 3600, 86400, 604800};
+
+#if LOGGING_TYPE < 0 || LOGGING_TYPE > 4
+#error "LOGGING_TYPE must be between 0 (seconds) and 4 (weeks)"
+#endif
+#if LOGGING_TIME <= 0
+#error "LOGGING_TIME must be positive"
+#endif
 
 static const char *stateName(WifiSensingState state)
 {
@@ -28,6 +38,8 @@ static void sensingTaskRun(void *argument)
     bool havePreviousState = false;
     bool readFailed = false;
     TickType_t lastWake = xTaskGetTickCount();
+    int64_t lastLogUs = esp_timer_get_time();
+    const int64_t logIntervalUs = (int64_t)LOGGING_TIME * secondsPerUnit[LOGGING_TYPE] * 1000000LL;
 
     for (;;) {
         WifiSensingMeasurement measurement;
@@ -37,37 +49,13 @@ static void sensingTaskRun(void *argument)
                 ESP_LOGI(tag, "%s", stateName(measurement.state));
                 previousState = measurement.state;
                 havePreviousState = true;
-                stateSince = xTaskGetTickCount();
+                lastLogUs = esp_timer_get_time();
             } else {
-                switch (LOGGING_TYPE) {
-                    case 0: // seconds
-                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 1000)) {
-                            ESP_LOGI(tag, "%s", stateName(measurement.state));
-                            stateSince = xTaskGetTickCount();
-                        }
-                    case 1: // minutes
-                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 1000)) {
-                            ESP_LOGI(tag, "%s", stateName(measurement.state));
-                            stateSince = xTaskGetTickCount();
-                        }
-                    case 2: // hours
-                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 60 * 1000)) {
-                            ESP_LOGI(tag, "%s", stateName(measurement.state));
-                            stateSince = xTaskGetTickCount();
-                        }
-                    case 3: // days
-                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 24 * 60 * 60 * 1000)) {
-                            ESP_LOGI(tag, "%s", stateName(measurement.state));
-                            stateSince = xTaskGetTickCount();
-                        }
-                    case 4: // weeks
-                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 7 * 24 * 60 * 60 * 1000)) {
-                            ESP_LOGI(tag, "%s", stateName(measurement.state));
-                            stateSince = xTaskGetTickCount();
-                        }
-                    break;
+                int64_t nowUs = esp_timer_get_time();
+                if (nowUs - lastLogUs >= logIntervalUs) {
+                    ESP_LOGI(tag, "%s", stateName(measurement.state));
+                    lastLogUs = nowUs;
                 }
-
             }
             readFailed = false;
         } else if (!readFailed) {
@@ -84,8 +72,7 @@ DriverStatus sensingTaskStart(void)
     if (sensingTaskHandle != NULL) {
         return DRIVER_OK;
     }
-    BaseType_t result = xTaskCreate(sensingTaskRun, "sensingTask",
-                                     SENSING_TASK_STACK_SIZE, NULL,
-                                     SENSING_TASK_PRIORITY, &sensingTaskHandle);
+    BaseType_t result = xTaskCreate(sensingTaskRun, "sensingTask", SENSING_TASK_STACK_SIZE, NULL,
+                                    SENSING_TASK_PRIORITY, &sensingTaskHandle);
     return result == pdPASS ? DRIVER_OK : DRIVER_INTERNAL_ERROR;
 }
