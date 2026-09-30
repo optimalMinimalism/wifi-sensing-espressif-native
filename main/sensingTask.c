@@ -8,8 +8,7 @@
 
 static const char *tag = "APP";
 static TaskHandle_t sensingTaskHandle;
-static int timeWithoutChangeMS = 0;
-static int timeWithoutChangeSEC = 0;
+TickType_t stateSince = xTaskGetTickCount();
 
 static const char *stateName(WifiSensingState state)
 {
@@ -38,12 +37,35 @@ static void sensingTaskRun(void *argument)
                 ESP_LOGI(tag, "%s", stateName(measurement.state));
                 previousState = measurement.state;
                 havePreviousState = true;
+                stateSince = xTaskGetTickCount();
             } else {
-                timeWithoutChangeMS += SENSING_PERIOD_MS;
-                if (timeWithoutChange >= 1000) {
-                    timeWithoutChangeSEC++;
-                    ESP_LOGI(tag, "no change for %d seconds", timeWithoutChangeSEC);
-                    timeWithoutChangeMS = 0;
+                switch (LOGGING_TYPE) {
+                    case 'sec':
+                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 1000)) {
+                            ESP_LOGI(tag, "%s", stateName(measurement.state));
+                            stateSince = xTaskGetTickCount();
+                        }
+                    case 'min':
+                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 1000)) {
+                            ESP_LOGI(tag, "%s", stateName(measurement.state));
+                            stateSince = xTaskGetTickCount();
+                        }
+                    case 'hour':
+                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 60 * 1000)) {
+                            ESP_LOGI(tag, "%s", stateName(measurement.state));
+                            stateSince = xTaskGetTickCount();
+                        }
+                    case 'day':
+                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 24 * 60 * 60 * 1000)) {
+                            ESP_LOGI(tag, "%s", stateName(measurement.state));
+                            stateSince = xTaskGetTickCount();
+                        }
+                    case 'week':
+                        if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 7 * 24 * 60 * 60 * 1000)) {
+                            ESP_LOGI(tag, "%s", stateName(measurement.state));
+                            stateSince = xTaskGetTickCount();
+                        }
+                    break;
                 }
 
             }
