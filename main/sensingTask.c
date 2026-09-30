@@ -8,6 +8,8 @@
 
 static const char *tag = "APP";
 static TaskHandle_t sensingTaskHandle;
+static int timeWithoutChangeMS = 0;
+static int timeWithoutChangeSEC = 0;
 
 static const char *stateName(WifiSensingState state)
 {
@@ -36,6 +38,14 @@ static void sensingTaskRun(void *argument)
                 ESP_LOGI(tag, "%s", stateName(measurement.state));
                 previousState = measurement.state;
                 havePreviousState = true;
+            } else {
+                timeWithoutChangeMS += SENSING_PERIOD_MS;
+                if (timeWithoutChange >= 1000) {
+                    timeWithoutChangeSEC++;
+                    ESP_LOGI(tag, "no change for %d seconds", timeWithoutChangeSEC);
+                    timeWithoutChangeMS = 0;
+                }
+
             }
             readFailed = false;
         } else if (!readFailed) {

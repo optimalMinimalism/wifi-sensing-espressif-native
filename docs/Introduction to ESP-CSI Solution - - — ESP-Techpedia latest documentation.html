@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!-- saved from url=(0123)https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html -->
+<html class="writer-html5" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/hm.js"></script><script async="" src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/js"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-R4GZ2432C8');
+        </script><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to ESP-CSI Solution -  -  — ESP-Techpedia latest documentation</title>
+      <link rel="stylesheet" href="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/pygments.css" type="text/css">
+      <link rel="stylesheet" href="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/theme.css" type="text/css">
+      <link rel="stylesheet" href="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/copybutton.css" type="text/css">
+      <link rel="stylesheet" href="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/theme_overrides.css" type="text/css">
+      <link rel="stylesheet" href="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/custom.css" type="text/css">
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/documentation_options.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/jquery.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/underscore.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/doctools.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/clipboard.min.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/copybutton.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/default.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/wavedrom.min.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/baidu_analytics.js"></script>
+        <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/table-preview.js"></script>
+    <script src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/theme.js"></script>
+
+    
+        
+
+    <script type="text/javascript">
+        DOCUMENTATION_OPTIONS.PAGENAME = 'esp-friends/solution-introduction/esp-csi/esp-csi-solution';
+        DOCUMENTATION_OPTIONS.PROJECT_SLUG = 'ESP-Techpedia';
+        DOCUMENTATION_OPTIONS.LATEST_BRANCH_NAME = 'master';
+        DOCUMENTATION_OPTIONS.VERSIONS_URL = '../../.././_static/docs_version.js';
+        DOCUMENTATION_OPTIONS.LANGUAGES = ["en", "zh_CN"];
+        DOCUMENTATION_OPTIONS.RELEASE = 'latest';
+    </script>
+
+    <script type="text/javascript" src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/docs_version.js"></script>
+    <link rel="index" title="Index" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/genindex.html">
+    <link rel="search" title="Search" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/search.html">
+    <link rel="next" title="ESP-IoT-Bridge Solution" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-iot-bridge/index.html">
+    <link rel="prev" title="ESP-CSI Solution" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/index.html"> 
+<style type="text/css">div.wavedromMenu{position:fixed;border:solid 1pt#CCCCCC;background-color:white;box-shadow:0px 10px 20px #808080;cursor:default;margin:0px;padding:0px;}div.wavedromMenu>ul{margin:0px;padding:0px;}div.wavedromMenu>ul>li{padding:2px 10px;list-style:none;}div.wavedromMenu>ul>li:hover{background-color:#b5d5ff;}</style></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+            <a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/index.html" class="icon icon-home"> ESP-Techpedia
+            <img src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/espressif-logo.svg" class="logo" alt="Logo">
+          </a>
+
+          
+
+          <div class="selectors">
+            <select id="version-select" style="width: 150px;" hidden="">
+              <option value="" disabled="" selected="">Choose version...</option>
+            </select>
+          </div>
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="https://docs.espressif.com/projects/esp-techpedia/en/latest/search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current" aria-expanded="true">
+<li class="toctree-l1"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-faq/index.html">ESP FAQ</a></li>
+<li class="toctree-l1 current" aria-expanded="true"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/index.html"><button class="toctree-expand" title="Open/close menu"></button>ESP Friends</a><ul class="" aria-expanded="false">
+<li class="toctree-l2"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/get-started/index.html">Get Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/advanced-development/index.html">Advanced Development</a></li>
+<li class="toctree-l2 current" aria-expanded="true"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/index.html"><button class="toctree-expand" title="Open/close menu"></button>Solution Introduction</a><ul class="" aria-expanded="false">
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/ai/index.html">AI Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-brookesia/index.html">ESP-Brookesia</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-at/index.html">ESP-AT Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/bldc/index.html">BLDC Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/camera/index.html">Camera Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/lcd/index.html">LCD Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/touch/index.html">Touch Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/usb/index.html">USB Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/multimedia/index.html">Multimedia Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-rainmaker/index.html">ESP-RainMaker Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-ble/index.html">ESP-BLE Solution</a></li>
+<li class="toctree-l3 current" aria-expanded="true"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/index.html"><button class="toctree-expand" title="Open/close menu"></button>ESP-CSI Solution</a><ul class="" aria-expanded="false">
+<li class="toctree-l4 current" aria-expanded="true"><a class="reference internal current" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#" aria-expanded="true">Introduction to ESP-CSI Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-iot-bridge/index.html">ESP-IoT-Bridge Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-now/index.html">ESP-NOW</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/mesh/index.html">Mesh Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/provision/index.html">Provision Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/thread/index.html">Thread Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/zigbee/index.html">Zigbee Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/wnic/index.html">Wireless Network Card Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-weaver/index.html">ESP-Weaver Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/light/index.html">Lighting Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/tool-recommendation/index.html">Tool Recommendation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/chip-comparator.html">Chip Comparator</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/index.html">ESP-Techpedia</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/index.html" class="icon icon-home"></a> »</li>
+          <li><a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/index.html">ESP Friends</a> »</li>
+          <li><a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/index.html">Introduction to Application Solutions</a> »</li>
+          <li><a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/index.html">ESP-CSI Solution</a> »</li>
+      <li>Introduction to ESP-CSI Solution</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com///blob/4002a73/docs/en/esp-friends/solution-introduction/esp-csi/esp-csi-solution.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction-to-esp-csi-solution">
+<h1>Introduction to ESP-CSI Solution<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#introduction-to-esp-csi-solution" title="Permalink to this headline"></a></h1>
+<p><a class="reference external" href="https://docs.espressif.com/projects/esp-techpedia/zh_CN/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html">[中文]</a></p>
+<section id="features-of-the-solution">
+<h2>Features of the Solution<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#features-of-the-solution" title="Permalink to this headline"></a></h2>
+<p>ESP-CSI (Channel State Information) is a technology provided by Espressif for obtaining the state information of Wi-Fi channels. It utilizes the features of the ESP series chips, and by analyzing detailed indicators of Wi-Fi channels, such as phase, propagation delay, signal-to-noise ratio, channel matrix, data rate, etc., it provides more detailed and meticulous wireless channel information. This strongly supports a variety of advanced applications and intelligent sensing technologies, bringing more innovation and application possibilities.</p>
+<p>ESP-CSI provides more information than traditional signal strength (RSSI). RSSI simply measures the strength of the signal, while CSI provides more detailed and richer channel information, including the amplitude and phase of the signal. This information is very useful for some advanced applications, such as indoor positioning, environmental monitoring, and human perception.</p>
+<p>ESP-CSI has a wide range of application prospects in the fields of IoT, smart homes, smart cities, etc., making devices more intelligent and accurately perceive and respond to changes in the surrounding environment.</p>
+<section id="advantages-of-the-solution">
+<h3>Advantages of the Solution<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#advantages-of-the-solution" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>No additional hardware cost: The ESP-CSI solution is based on the inherent features of the ESP series chips, without the need for additional hardware costs, providing developers with an economical and efficient solution.</p></li>
+<li><p>Real-time response: ESP series chips can process and analyze CSI data in real time on the device locally, providing fast response and high performance.</p></li>
+<li><p>Interference resistance: The amplitude of CSI is essentially a set of channel attenuation coefficients. As long as the channel itself does not change, it is very robust against interference from power adapters and other frequency hoppers.</p></li>
+<li><p>Finer granularity: Instead of using composite values (such as RSSI) to measure channels, it samples frequency responses in units of subcarriers in the channel, thus describing the channel in a finer granularity within the frequency domain.</p></li>
+</ul>
+</section>
+</section>
+<section id="common-application-scenarios-of-esp-csi">
+<h2>Common Application Scenarios of ESP-CSI<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#common-application-scenarios-of-esp-csi" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Intruder Detection: With ESP-CSI, you can choose a combination of highly sensitive subcarriers and signals from non-line-of-sight propagation path directions to improve the sensitivity of passive personnel detection and expand the detection range under different multipath propagation environments. This can form an intrusion detection system, providing an efficient intrusion detection solution for security applications.</p></li>
+<li><p>Positioning and Ranging: ESP-CSI can draw on the RSSI method and use CSI as richer fingerprint information (including signal amplitude and phase information on multiple subcarriers), or through the frequency-selective attenuation model for more accurate positioning and ranging. This helps to achieve more accurate positioning and distance measurement in indoor or complex environments.</p></li>
+<li><p>Human Activity Detection and Recognition: With the high sensitivity of ESP-CSI, it can recognize human movements, gestures, and daily activities. This is very useful for implementing smart home, health monitoring, and human interaction applications.</p></li>
+<li><p>【Video】 <a class="reference external" href="https://www.youtube.com/watch?v=JjdpzM6zVJ8">ESP-CSI: Transforming Wi-Fi into a Sensing Platform</a></p></li>
+<li><p>【Video】 <a class="reference external" href="https://www.youtube.com/watch?v=tFxKUzEDSdw">ESP-WIFI-CSI: Espressif’s Human-Detection Solution</a></p></li>
+</ul>
+</section>
+<section id="chip-csi-performance-ranking">
+<h2>Chip CSI Performance Ranking<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#chip-csi-performance-ranking" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>ESP32-C5 ＞ ESP32-C6 ＞ ESP32-C3 ≈ ESP32-S3 ＞ ESP32</p></li>
+</ul>
+</section>
+<section id="implementation-of-esp-csi">
+<h2>Implementation of ESP-CSI<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#implementation-of-esp-csi" title="Permalink to this headline"></a></h2>
+<p>Please refer to <a class="reference external" href="https://github.com/espressif/esp-csi/blob/master/README.md#how-to-get-csi">How to get CSI</a>.</p>
+<section id="esp-csi-references">
+<h3>ESP-CSI References<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#esp-csi-references" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/espressif/esp-csi/tree/master">ESP-CSI Github</a></p></li>
+<li><p><a class="reference external" href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/network/esp_wifi.html">ESP-IDF Wi-Fi Library</a></p></li>
+</ul>
+</section>
+<section id="esp-csi-related-components">
+<h3>ESP-CSI Related Components<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#esp-csi-related-components" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://components.espressif.com/components/espressif/esp-radar/versions/0.3.2/readme">esp-radar</a>: The human motion detection component of ESP-CSI, which can achieve the acquisition of CSI data and human motion detection.</p></li>
+<li><p><a class="reference external" href="https://components.espressif.com/components/espressif/esp_csi_gain_ctrl/versions/0.1.5/readme">esp-csi-gain-ctrl</a>: This is a radio frequency reception gain compensation control component, used to compensate for the automatic gain control during radio frequency reception, making it easier to integrate into products.</p></li>
+<li><p><a class="reference external" href="https://components.espressif.com/components/espressif/esp_wifi_sensing">esp_wifi_sensing</a>: A CSI-based Wi-Fi sensing state machine component, encapsulating multi-channel management, motion/human presence detection, on-site calibration, and event callbacks, facilitating rapid integration of human motion and presence sensing capabilities.</p></li>
+</ul>
+</section>
+<section id="common-crystal-multi-antenna-solution">
+<h3>Common Crystal Multi-Antenna Solution<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#common-crystal-multi-antenna-solution" title="Permalink to this headline"></a></h3>
+<p>The CSI research network cards used in the current algorithm deployment scenarios are mostly multi-antenna network cards. We design the common crystal of two chips, which can achieve a similar effect. esp-crab provides a Wifi-CSI RF phase synchronization solution, which includes two working modes: 1. Self-transmission and self-reception mode; 2. Single-transmission and dual-reception mode.</p>
+<p><a class="reference external" href="https://github.com/espressif/esp-csi/tree/master/examples/esp-crab">Common Crystal Solution Schematic and Example</a></p>
+<ul class="simple">
+<li><p>Self-transmission and reception mode: In this mode, two ESP32-C5 chips send and receive signals respectively. By calculating the phase information in the received Wi-Fi CSI signal, it is possible to sense disturbances in the radio frequency signal path at the millimeter level. At the same time, by installing copper sheets to control the transmission path of the radio frequency signal, the sensing range can also be adjusted, thus providing technical support for high-precision short-range Wi-Fi sensing. This mode makes Wi-Fi signal sensing more refined, suitable for precise sensing applications in short distances and complex environments.</p></li>
+</ul>
+<p><a class="reference external" href="https://dl.espressif.com/public/Self-Transmission%20and%20Reception%20Amplitude.gif">Self-transmission and reception amplitude effect</a>
+<a class="reference external" href="https://dl.espressif.com/public/Self-Transmission%20and%20Reception%20Phase.gif">Self-transmission and reception phase effect</a></p>
+<ul class="simple">
+<li><p>Single-transmission dual-reception mode: In this mode, one ESP32-C5 chip is responsible for sending signals, while the two ESP32-C5 chips of esp-crab are responsible for receiving signals. By dispersing the sender and receiver, Wi-Fi sensing can be achieved in a large spatial range. The co-crystal Wi-Fi CSI information obtained by esp-crab can meet the performance requirements of Wi-Fi sensing in cutting-edge research, and can directly dock with mature advanced algorithms, further enhancing the accuracy and application value of the wireless sensing system. This mode provides strong technical support for wireless sensing and positioning in large ranges and complex environments.</p></li>
+</ul>
+<p><a class="reference external" href="https://dl.espressif.com/public/Single-Transmission%20and%20Dual-Reception%20Phase.gif">Single-transmission dual-reception phase effect</a></p>
+</section>
+<section id="motion-detection-algorithm">
+<h3>Motion Detection Algorithm<a class="headerlink" href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/esp-csi-solution.html#motion-detection-algorithm" title="Permalink to this headline"></a></h3>
+<p>We have designed a multi-antenna co-crystal development board for collecting and real-time processing of CSI data. The board is equipped with an ESP32-C3 and an ESP32-S3. The ESP32-C3 is connected to three onboard directional antennas through an antenna switch, while the ESP32-S3 is connected to an antenna socket to provide more flexible antenna types and signal transmission path choices. During operation, the ESP32-C3 continuously sends airborne packets (such as ESP-NOW), while the ESP32-S3 is responsible for obtaining CSI from the airborne packets sent by the ESP32-C3 that are reflected by the environment. The two chips are connected through a clock buffer to eliminate the relative frequency offset caused by the clock asynchrony between the two chips. In this way, the detection algorithm running on the ESP32-S3 can further utilize the phase information in the CSI data for detection. The calculation results and thresholds of the motion detection algorithm will be displayed on the screen in real time, and the motion detection results will be highlighted in red.</p>
+<img alt="effect_show_of_motion_detect" class="align-center" src="./Introduction to ESP-CSI Solution - - — ESP-Techpedia latest documentation_files/effect_show_of_motion_detect.png">
+</section>
+</section>
+</section>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-csi/index.html" class="btn btn-neutral float-left" title="ESP-CSI Solution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/esp-iot-bridge/index.html" class="btn btn-neutral float-right" title="ESP-IoT-Bridge Solution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>© Copyright 2016 - 2026, Espressif Systems (Shanghai) Co., Ltd.</p>
+  </div>
+
+  <ul class="footer">
+        <li>
+	    
+            
+            Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/espressif/sphinx_idf_theme">theme</a>  based on <a href="https://github.com/readthedocs/sphinx_rtd_theme">Read the Docs Sphinx Theme</a>.
+         </li>
+    <li class="footer-aside">
+        <a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/ESP-Techpedia-en-master.pdf" class="fa fa-file-pdf-o"> Download PDF</a>
+    </li>
+
+  </ul> 
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+
+</body></html>
