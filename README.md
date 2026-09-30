@@ -9,7 +9,7 @@ A FreeRTOS task logs only state changes every 500 ms.
 
 ## Before flashing
 
-1. Edit `WIFI_SSID` and `WIFI_PASSWORD` in `main/config.h`.
+1. Copy `.env.example` to `.env` and set `WIFI_SSID` and `WIFI_PASSWORD` there. Use plain `KEY=value` lines without quotes. `.env` stays local; the build embeds these values in the firmware.
 2. Keep the area between the ESP32-S3 and router empty during boot calibration.
 3. Use ESP-IDF 6.0 for this component release. This machine has it at
    `/home/optimalminimalist/.espressif/v6.0/esp-idf`; select that path in

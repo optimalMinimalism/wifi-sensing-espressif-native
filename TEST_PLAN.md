@@ -19,8 +19,9 @@ per le sensibilità sono moltiplicati per 1000.
 
 ## Preparazione
 
-1. Inserire SSID e password del router 2,4 GHz in `main/config.h`. Evitare di
-   pubblicare questo file se contiene credenziali reali.
+1. Copiare `.env.example` in `.env` e inserire SSID e password del router
+   2,4 GHz. Il file `.env` resta locale; le credenziali entrano nel firmware
+   durante la build.
 2. Compilare con ESP-IDF 6.0: `idf.py build`.
 3. Con la scheda collegata: `idf.py -p /dev/ttyACM0 flash monitor`, adattando
    la porta. Salvare il log seriale con i timestamp.
