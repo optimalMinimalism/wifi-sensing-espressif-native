@@ -13,5 +13,4 @@
 #define SENSING_CALIBRATION_MS  15000 // Calibration time for the sensors
 
 #define LOGGING_TIME 1 // How often to log the sensors
-#define LOGGING_TYPE "sec" // "sec" , "min", "hour", "day" or "week" for logging every x seconds, minutes, hours, days or weeks. 
-                            
+#define LOGGING_TYPE 0 // 0 = seconds, 1 = minutes, 2 = hours, 3 = days, 4 = weeks

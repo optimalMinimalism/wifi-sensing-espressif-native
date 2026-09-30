@@ -40,27 +40,27 @@ static void sensingTaskRun(void *argument)
                 stateSince = xTaskGetTickCount();
             } else {
                 switch (LOGGING_TYPE) {
-                    case 'sec':
+                    case 0: // seconds
                         if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 1000)) {
                             ESP_LOGI(tag, "%s", stateName(measurement.state));
                             stateSince = xTaskGetTickCount();
                         }
-                    case 'min':
+                    case 1: // minutes
                         if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 1000)) {
                             ESP_LOGI(tag, "%s", stateName(measurement.state));
                             stateSince = xTaskGetTickCount();
                         }
-                    case 'hour':
+                    case 2: // hours
                         if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 60 * 60 * 1000)) {
                             ESP_LOGI(tag, "%s", stateName(measurement.state));
                             stateSince = xTaskGetTickCount();
                         }
-                    case 'day':
+                    case 3: // days
                         if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 24 * 60 * 60 * 1000)) {
                             ESP_LOGI(tag, "%s", stateName(measurement.state));
                             stateSince = xTaskGetTickCount();
                         }
-                    case 'week':
+                    case 4: // weeks
                         if ((xTaskGetTickCount() - stateSince) >= pdMS_TO_TICKS(LOGGING_TIME * 7 * 24 * 60 * 60 * 1000)) {
                             ESP_LOGI(tag, "%s", stateName(measurement.state));
                             stateSince = xTaskGetTickCount();
