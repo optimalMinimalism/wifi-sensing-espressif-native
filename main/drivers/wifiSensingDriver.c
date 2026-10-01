@@ -2,14 +2,16 @@
 
 #include <string.h>
 
+#include "config.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "esp_wifi_sensing.h"
 #include "wifiDriver.h"
 
 static const char *tag = "SENSING";
 static esp_wifi_sensing_fsm_handle_t sensingHandle;
-static uint8_t peerBssid[6];
+static uint8_t peerMac[6];
 static bool calibrating;
 static bool calibrated;
 static bool running;
@@ -31,13 +33,17 @@ static DriverStatus statusFromEspErr(esp_err_t error)
 
 static DriverStatus checkPeer(void)
 {
+#if SENSING_USE_DEDICATED_TX
+    return wifiIsConnected() ? DRIVER_OK : DRIVER_NOT_READY;
+#else
     uint8_t currentBssid[6];
     DriverStatus status = wifiGetBssid(currentBssid);
     if (status != DRIVER_OK) {
         return status;
     }
-    return memcmp(currentBssid, peerBssid, sizeof(peerBssid)) == 0
+    return memcmp(currentBssid, peerMac, sizeof(peerMac)) == 0
         ? DRIVER_OK : DRIVER_INVALID_DATA;
+#endif
 }
 
 DriverStatus wifiSensingInit(void)
@@ -45,7 +51,14 @@ DriverStatus wifiSensingInit(void)
     if (sensingHandle != NULL) {
         return DRIVER_OK;
     }
-    DriverStatus status = wifiGetBssid(peerBssid);
+    DriverStatus status;
+#if SENSING_USE_DEDICATED_TX
+    const uint8_t configuredPeer[6] = SENSING_PEER_MAC_BYTES;
+    memcpy(peerMac, configuredPeer, sizeof(peerMac));
+    status = wifiIsConnected() ? DRIVER_OK : DRIVER_NOT_READY;
+#else
+    status = wifiGetBssid(peerMac);
+#endif
     if (status != DRIVER_OK) {
         return status;
     }
@@ -54,8 +67,9 @@ DriverStatus wifiSensingInit(void)
     config.max_channel_num = 1;
     esp_err_t error = esp_wifi_sensing_fsm_create(&config, &sensingHandle);
     if (error == ESP_OK) {
-        error = esp_wifi_sensing_fsm_add_channel(sensingHandle, peerBssid);
+        error = esp_wifi_sensing_fsm_add_channel(sensingHandle, peerMac);
     }
+#if !SENSING_USE_DEDICATED_TX
     if (error == ESP_OK) {
         /* Training also needs a steady stream of CSI samples. */
         error = esp_wifi_sensing_fsm_ping_router_start(sensingHandle);
@@ -63,6 +77,7 @@ DriverStatus wifiSensingInit(void)
             pingRunning = true;
         }
     }
+#endif
     if (error != ESP_OK) {
         ESP_LOGE(tag, "initialization failed: %s", esp_err_to_name(error));
         if (sensingHandle != NULL) {
@@ -71,7 +86,12 @@ DriverStatus wifiSensingInit(void)
         }
         return statusFromEspErr(error);
     }
-    ESP_LOGI(tag, "using connected AP BSSID as sensing peer");
+#if SENSING_USE_DEDICATED_TX
+    ESP_LOGI(tag, "using dedicated transmitter " MACSTR " as sensing peer; router ping disabled",
+             MAC2STR(peerMac));
+#else
+    ESP_LOGI(tag, "using connected AP BSSID " MACSTR " as sensing peer", MAC2STR(peerMac));
+#endif
     return DRIVER_OK;
 }
 
@@ -87,7 +107,7 @@ DriverStatus wifiSensingCalibrationStart(void)
     if (status != DRIVER_OK) {
         return status;
     }
-    esp_err_t error = esp_wifi_sensing_fsm_train_start(sensingHandle, peerBssid);
+    esp_err_t error = esp_wifi_sensing_fsm_train_start(sensingHandle, peerMac);
     if (error != ESP_OK) {
         ESP_LOGE(tag, "calibration start failed: %s", esp_err_to_name(error));
         return statusFromEspErr(error);
@@ -115,7 +135,7 @@ DriverStatus wifiSensingCalibrationGetProgress(WifiSensingCalibrationProgress *p
     }
 
     esp_wifi_sensing_fsm_channel_diag_t diagnostic = {0};
-    esp_err_t error = esp_wifi_sensing_fsm_get_channel_diag(sensingHandle, peerBssid, &diagnostic);
+    esp_err_t error = esp_wifi_sensing_fsm_get_channel_diag(sensingHandle, peerMac, &diagnostic);
     if (error != ESP_OK) {
         return statusFromEspErr(error);
     }
@@ -136,7 +156,7 @@ DriverStatus wifiSensingCalibrationStop(void)
     }
     float wanderThreshold;
     float jitterThreshold;
-    esp_err_t error = esp_wifi_sensing_fsm_train_stop(sensingHandle, peerBssid,
+    esp_err_t error = esp_wifi_sensing_fsm_train_stop(sensingHandle, peerMac,
                                                        &wanderThreshold, &jitterThreshold);
     calibrating = false;
     if (error != ESP_OK) {
@@ -212,10 +232,10 @@ DriverStatus wifiSensingRead(WifiSensingMeasurement *measurement)
     esp_wifi_sensing_fsm_channel_diag_t diagnostic = {0};
     esp_wifi_sensing_fsm_state_t channelState;
     esp_err_t error = esp_wifi_sensing_fsm_get_channel_diag(sensingHandle,
-                                                              peerBssid, &diagnostic);
+                                                              peerMac, &diagnostic);
     if (error == ESP_OK) {
         error = esp_wifi_sensing_fsm_get_state(sensingHandle,
-                                                peerBssid, &channelState);
+                                                peerMac, &channelState);
     }
     if (error != ESP_OK) {
         return statusFromEspErr(error);
@@ -228,8 +248,13 @@ DriverStatus wifiSensingRead(WifiSensingMeasurement *measurement)
     measurement->presenceWanderAverage = diagnostic.presence_wander_average;
     measurement->presenceSomeoneThreshold = diagnostic.presence_someone_threshold;
     measurement->motion = channelState == ESP_WIFI_SENSING_FSM_STATE_ACTIVE;
-    measurement->presence = diagnostic.presence_ready &&
-                            diagnostic.presence_someone_status;
+    measurement->nativePresence = diagnostic.presence_ready &&
+                                  diagnostic.presence_someone_status;
+    measurement->appliedPresenceThreshold =
+        diagnostic.train_wander_threshold * SENSING_PRESENCE_THRESHOLD_MULTIPLIER;
+    measurement->presence = diagnostic.presence_ready && diagnostic.train_thresholds_valid &&
+                            measurement->appliedPresenceThreshold > 0.0f &&
+                            diagnostic.presence_wander_average > measurement->appliedPresenceThreshold;
     if (!measurement->calibrated ||
         diagnostic.init_stage != ESP_WIFI_SENSING_FSM_INIT_STAGE_STABLE) {
         measurement->state = WIFI_SENSING_UNKNOWN;
@@ -266,6 +291,6 @@ DriverStatus wifiSensingDeinit(void)
     sensingHandle = NULL;
     calibrating = false;
     calibrated = false;
-    memset(peerBssid, 0, sizeof(peerBssid));
+    memset(peerMac, 0, sizeof(peerMac));
     return DRIVER_OK;
 }

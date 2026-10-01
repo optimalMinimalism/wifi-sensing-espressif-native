@@ -25,6 +25,8 @@ typedef struct
     float wander;
     float presenceWanderAverage;
     float presenceSomeoneThreshold;
+    float appliedPresenceThreshold;
+    bool nativePresence;
 } WifiSensingMeasurement;
 
 typedef struct

@@ -2,6 +2,7 @@
 """Create a C header from the project's local, untracked .env file."""
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -15,7 +16,7 @@ def read_credentials(path: Path) -> dict[str, str]:
             raise ValueError(f".env line {line_number}: expected KEY=<value>")
         key, value = line.split("=", 1)
         key = key.strip()
-        if key not in {"WIFI_SSID", "WIFI_PASSWORD"}:
+        if key not in {"WIFI_SSID", "WIFI_PASSWORD", "SENSING_PEER_MAC"}:
             raise ValueError(f".env line {line_number}: unknown key {key!r}")
         if key in values:
             raise ValueError(f".env line {line_number}: duplicate {key}")
@@ -37,17 +38,29 @@ def read_credentials(path: Path) -> dict[str, str]:
         raise ValueError(".env: WIFI_SSID exceeds 32 bytes")
     if len(values["WIFI_PASSWORD"].encode("utf-8")) > 64:
         raise ValueError(".env: WIFI_PASSWORD exceeds 64 bytes")
+    peer_mac = values.get("SENSING_PEER_MAC", "")
+    if peer_mac and not re.fullmatch(r"[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5}", peer_mac):
+        raise ValueError(".env: SENSING_PEER_MAC must be empty or have the form 1A:00:00:00:00:01")
+    if peer_mac:
+        peer_octets = [int(part, 16) for part in peer_mac.split(":")]
+        if peer_octets[0] & 0x01:
+            raise ValueError(".env: SENSING_PEER_MAC must be a unicast address")
     return values
 
 
 def main() -> int:
     env_path, output_path = map(Path, sys.argv[1:])
     credentials = read_credentials(env_path)
+    peer_mac = credentials.get("SENSING_PEER_MAC", "")
+    peer_octets = [int(part, 16) for part in peer_mac.split(":")] if peer_mac else [0] * 6
+    peer_initializer = ", ".join(f"0x{octet:02x}" for octet in peer_octets)
     content = (
         "#pragma once\n"
         "/* Generated at build time from .env; do not edit. */\n"
         f"#define WIFI_SSID {json.dumps(credentials['WIFI_SSID'], ensure_ascii=False)}\n"
         f"#define WIFI_PASSWORD {json.dumps(credentials['WIFI_PASSWORD'], ensure_ascii=False)}\n"
+        f"#define SENSING_USE_DEDICATED_TX {1 if peer_mac else 0}\n"
+        f"#define SENSING_PEER_MAC_BYTES {{{peer_initializer}}}\n"
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if not output_path.exists() or output_path.read_text(encoding="utf-8") != content:

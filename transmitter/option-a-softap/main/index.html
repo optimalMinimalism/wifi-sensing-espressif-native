@@ -9,7 +9,7 @@
     input { width: min(100%, 26rem); padding: .5rem; }
     button { padding: .5rem .8rem; margin: .3rem .3rem .3rem 0; }
     #events { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f3f3; padding: 1rem; min-height: 12rem; }
-    .online { color: #067b31; } .offline { color: #b00020; }
+    .online { color: #067b31; } .offline { color: #b00020; } .paused { color: #865b00; }
   </style>
 </head>
 <body>
@@ -20,7 +20,7 @@
   <input id="token" type="password" autocomplete="off" spellcheck="false">
   <div>
     <button id="connect">Collega</button>
-    <button id="pause" disabled>Pausa</button>
+    <button id="pause" disabled>Pausa aggiornamenti</button>
     <button id="reboot" disabled>Riavvia SoftAP</button>
   </div>
   <h2>Eventi del transmitter</h2>
@@ -37,6 +37,7 @@
     let lastId = 0;
     let previousUptime = null;
     let busy = false;
+    let paused = false;
     let lines = [];
 
     tokenInput.value = sessionStorage.getItem('controlToken') || '';
@@ -66,10 +67,11 @@
     }
 
     async function poll() {
-      if (busy || !tokenInput.value.trim()) return;
+      if (busy || paused || !tokenInput.value.trim()) return;
       busy = true;
       try {
         const status = await request('/status');
+        if (paused) return;
         setConnection('online', true);
         details.textContent = `IP ${status.ip} · client collegati ${status.clients} · uptime ${Math.floor(status.uptime_ms / 1000)} s`;
         if (previousUptime !== null && status.uptime_ms < previousUptime) {
@@ -78,6 +80,7 @@
         }
         previousUptime = status.uptime_ms;
         const data = await request(`/events?after=${lastId}`);
+        if (paused) return;
         if (lastId && data.first_available_id > lastId + 1) {
           print('--- Alcuni eventi non sono più nel buffer ---');
         }
@@ -86,6 +89,7 @@
           lastId = event.id;
         }
       } catch (error) {
+        if (paused) return;
         setConnection(error.message === 'Token errato' ? 'token errato' : 'offline', false);
         details.textContent = error.message;
         if (error.message === 'Token errato') {
@@ -104,22 +108,32 @@
         return;
       }
       sessionStorage.setItem('controlToken', tokenInput.value.trim());
+      paused = false;
       clearInterval(timer);
       timer = setInterval(poll, 2000);
       pauseButton.disabled = false;
-      pauseButton.textContent = 'Pausa';
+      pauseButton.textContent = 'Pausa aggiornamenti';
       poll();
     }
 
     document.querySelector('#connect').addEventListener('click', connect);
     pauseButton.addEventListener('click', () => {
-      if (timer) {
+      if (!paused) {
+        paused = true;
         clearInterval(timer);
         timer = null;
-        pauseButton.textContent = 'Riprendi';
+        pauseButton.textContent = 'Riprendi aggiornamenti';
+        connection.textContent = 'aggiornamenti in pausa';
+        connection.className = 'paused';
+        details.textContent = 'Solo questa pagina ha smesso di interrogare il SoftAP. Firmware e seriale continuano.';
+        print('[browser] Aggiornamenti sospesi; il firmware continua a funzionare.');
       } else {
+        paused = false;
+        pauseButton.textContent = 'Pausa aggiornamenti';
+        connection.textContent = 'verifica in corso';
+        connection.className = 'paused';
+        print('[browser] Aggiornamenti ripresi.');
         timer = setInterval(poll, 2000);
-        pauseButton.textContent = 'Pausa';
         poll();
       }
     });

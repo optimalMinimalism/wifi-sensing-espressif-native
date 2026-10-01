@@ -22,3 +22,10 @@
 /transmitter/option-a-softap/managed_components/
 /transmitter/option-a-softap/sdkconfig
 /transmitter/option-a-softap/sdkconfig.old
+
+# Option B dedicated transmitter build and local radio settings
+/transmitter/option-b-dedicated-tx/.env
+/transmitter/option-b-dedicated-tx/build/
+/transmitter/option-b-dedicated-tx/managed_components/
+/transmitter/option-b-dedicated-tx/sdkconfig
+/transmitter/option-b-dedicated-tx/sdkconfig.old

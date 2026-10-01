@@ -1,4 +1,6 @@
-set(WIFI_ENV_FILE "${PROJECT_DIR}/.env")
+if(NOT WIFI_ENV_FILE)
+    set(WIFI_ENV_FILE "${PROJECT_DIR}/.env")
+endif()
 if(NOT EXISTS "${WIFI_ENV_FILE}")
     message(FATAL_ERROR "Missing .env: copy .env.example to .env and set WIFI_SSID/WIFI_PASSWORD")
 endif()
