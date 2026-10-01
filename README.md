@@ -4,7 +4,7 @@ This ESP-IDF project uses one ESP32-S3 and a 2.4 GHz Wi-Fi router to classify
 `EMPTY`, `PRESENCE`, and `MOTION` from Espressif's Wi-Fi CSI sensing component.
 The station waits for an IP address, uses the connected AP BSSID as its single
 sensing peer, and pings the router to keep CSI samples flowing. Startup trains
-against an empty monitored area for at least 15 seconds, waiting up to 60 seconds for usable training data before starting detection.
+against an empty monitored area for at least 30 seconds, waiting up to 60 seconds for usable training data before starting detection.
 A FreeRTOS task logs only state changes every 500 ms.
 
 ## Before flashing

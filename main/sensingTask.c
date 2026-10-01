@@ -36,9 +36,10 @@ static void logDiagnostics(const WifiSensingMeasurement *measurement)
 {
     ESP_LOGI(
         tag,
-        "diag state=%s calibrated=%d presence_ready=%d presence_avg=%.6f presence_threshold=%.6f",
+        "diag state=%s calibrated=%d presence_ready=%d wander_raw=%.9f presence_avg=%.6f presence_threshold=%.6f",
         stateName(measurement->state), measurement->calibrated, measurement->presenceReady,
-        measurement->presenceWanderAverage, measurement->presenceSomeoneThreshold);
+        measurement->wander, measurement->presenceWanderAverage,
+        measurement->presenceSomeoneThreshold);
 }
 
 static void sensingTaskRun(void *argument)

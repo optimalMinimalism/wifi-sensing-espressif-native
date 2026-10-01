@@ -15,3 +15,10 @@
 
 # Local test notes
 /TEST_PLAN.md
+
+# Option A firmware build and local credentials
+/transmitter/option-a-softap/.env
+/transmitter/option-a-softap/build/
+/transmitter/option-a-softap/managed_components/
+/transmitter/option-a-softap/sdkconfig
+/transmitter/option-a-softap/sdkconfig.old

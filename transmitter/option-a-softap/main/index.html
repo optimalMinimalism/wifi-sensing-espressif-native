@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSI SoftAP</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+    input { width: min(100%, 26rem); padding: .5rem; }
+    button { padding: .5rem .8rem; margin: .3rem .3rem .3rem 0; }
+    #events { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f3f3; padding: 1rem; min-height: 12rem; }
+    .online { color: #067b31; } .offline { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>CSI SoftAP</h1>
+  <p>Stato server: <strong id="connection" class="offline">non connesso</strong></p>
+  <p id="details">Inserisci il token per leggere lo stato.</p>
+  <label for="token">Token di controllo</label><br>
+  <input id="token" type="password" autocomplete="off" spellcheck="false">
+  <div>
+    <button id="connect">Collega</button>
+    <button id="pause" disabled>Pausa</button>
+    <button id="reboot" disabled>Riavvia SoftAP</button>
+  </div>
+  <h2>Eventi del transmitter</h2>
+  <p>Il tempo è dall'avvio della scheda. Qui compaiono gli eventi pubblicati dal firmware, non l'intero log seriale né gli stati del receiver.</p>
+  <pre id="events" aria-live="polite"></pre>
+  <script>
+    const tokenInput = document.querySelector('#token');
+    const connection = document.querySelector('#connection');
+    const details = document.querySelector('#details');
+    const output = document.querySelector('#events');
+    const pauseButton = document.querySelector('#pause');
+    const rebootButton = document.querySelector('#reboot');
+    let timer = null;
+    let lastId = 0;
+    let previousUptime = null;
+    let busy = false;
+    let lines = [];
+
+    tokenInput.value = sessionStorage.getItem('controlToken') || '';
+
+    function print(line) {
+      lines.push(line);
+      if (lines.length > 200) lines = lines.slice(-200);
+      output.textContent = lines.join('\n');
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function setConnection(label, online) {
+      connection.textContent = label;
+      connection.className = online ? 'online' : 'offline';
+      rebootButton.disabled = !online;
+    }
+
+    async function request(path, options = {}) {
+      const response = await fetch(path, {
+        cache: 'no-store',
+        ...options,
+        headers: { 'X-Control-Token': tokenInput.value.trim() }
+      });
+      if (response.status === 401) throw new Error('Token errato');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    }
+
+    async function poll() {
+      if (busy || !tokenInput.value.trim()) return;
+      busy = true;
+      try {
+        const status = await request('/status');
+        setConnection('online', true);
+        details.textContent = `IP ${status.ip} · client collegati ${status.clients} · uptime ${Math.floor(status.uptime_ms / 1000)} s`;
+        if (previousUptime !== null && status.uptime_ms < previousUptime) {
+          print('--- SoftAP riavviato ---');
+          lastId = 0;
+        }
+        previousUptime = status.uptime_ms;
+        const data = await request(`/events?after=${lastId}`);
+        if (lastId && data.first_available_id > lastId + 1) {
+          print('--- Alcuni eventi non sono più nel buffer ---');
+        }
+        for (const event of data.events) {
+          print(`[+${(event.uptime_ms / 1000).toFixed(1)} s] ${event.type}: ${event.message}`);
+          lastId = event.id;
+        }
+      } catch (error) {
+        setConnection(error.message === 'Token errato' ? 'token errato' : 'offline', false);
+        details.textContent = error.message;
+        if (error.message === 'Token errato') {
+          clearInterval(timer);
+          timer = null;
+          pauseButton.disabled = true;
+        }
+      } finally {
+        busy = false;
+      }
+    }
+
+    function connect() {
+      if (!tokenInput.value.trim()) {
+        details.textContent = 'Inserisci il token di controllo.';
+        return;
+      }
+      sessionStorage.setItem('controlToken', tokenInput.value.trim());
+      clearInterval(timer);
+      timer = setInterval(poll, 2000);
+      pauseButton.disabled = false;
+      pauseButton.textContent = 'Pausa';
+      poll();
+    }
+
+    document.querySelector('#connect').addEventListener('click', connect);
+    pauseButton.addEventListener('click', () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        pauseButton.textContent = 'Riprendi';
+      } else {
+        timer = setInterval(poll, 2000);
+        pauseButton.textContent = 'Pausa';
+        poll();
+      }
+    });
+    rebootButton.addEventListener('click', async () => {
+      if (!confirm('Riavviare il transmitter SoftAP? La connessione Wi-Fi cadrà per qualche secondo.')) return;
+      try {
+        await request('/reboot', { method: 'POST' });
+        print('--- Riavvio richiesto ---');
+      } catch (error) {
+        details.textContent = error.message;
+      }
+    });
+    if (tokenInput.value) connect();
+  </script>
+</body>
+</html>

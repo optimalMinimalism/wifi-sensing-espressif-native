@@ -10,7 +10,7 @@
 #define SENSING_TASK_PRIORITY   6      
 #define SENSING_TASK_STACK_SIZE 4096  
 #define SENSING_PERIOD_MS       500   // How often to read the sensors
-#define SENSING_CALIBRATION_MS  15000 // Calibration time for the sensors
+#define SENSING_CALIBRATION_MS  30000 // Minimum calibration time in milliseconds
 #define SENSING_CALIBRATION_MAX_MS 60000 // Fail if training has no usable data by this time
 
 //provisory logging settings, can be changed in the future
