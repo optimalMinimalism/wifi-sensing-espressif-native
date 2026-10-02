@@ -11,6 +11,17 @@ starting detection.
 A FreeRTOS task reads the sensing state every 500 ms and logs state changes and
 periodic diagnostics.
 
+For diagnosis, calibration now logs its sample counts, training decision,
+background average, and current wander/jitter each second. Runtime logs keep
+the original `diag state=...` line and add `diag_motion`, `diag_train`, and
+`diag_link` lines at each logging interval. `diag_motion` shows the component's
+internal scaled motion levels and process/initialization states; `diag_train`
+shows the cached training measurements; `diag_link` reports the AP RSSI and
+channel. In dedicated-transmitter mode, `ap_rssi_dbm` still describes the AP,
+not the ESP-NOW transmitter. These are the component's public diagnostics, not
+raw CSI or a count of CSI frames received. The extra lines increase serial log
+volume; keep the monitor running when collecting a test.
+
 ## Before flashing
 
 1. Copy `.env.example` to `.env` and set `WIFI_SSID` and `WIFI_PASSWORD` there. Use `WIFI_SSID=<network name>` and `WIFI_PASSWORD=<password>`; spaces inside `<...>` belong to the value. For an open network, use `WIFI_PASSWORD=<>`. `.env` stays local; the build embeds these values in the firmware. `SENSING_PEER_MAC=<>` keeps router sensing; setting it to the option-B transmitter MAC selects the dedicated source and disables router pings. See `transmitter/option-b-dedicated-tx/README.md`.

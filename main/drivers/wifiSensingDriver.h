@@ -27,6 +27,23 @@ typedef struct
     float presenceSomeoneThreshold;
     float appliedPresenceThreshold;
     bool nativePresence;
+    uint32_t motionSmoothScaled;
+    uint32_t motionEnterLevelScaled;
+    uint32_t motionExitLevelScaled;
+    int motionProcessState;
+    int motionInitStage;
+    float trainWanderThreshold;
+    float trainJitterThreshold;
+    bool trainThresholdsValid;
+    int trainStatus;
+    int trainLastAction;
+    uint32_t trainSampleCount;
+    uint32_t trainBackgroundCount;
+    float trainBackgroundAverage;
+    float trainLastBasisWander;
+    bool apInfoValid;
+    int apRssi;
+    int apChannel;
 } WifiSensingMeasurement;
 
 typedef struct
@@ -35,6 +52,10 @@ typedef struct
     uint32_t backgroundCount;
     int trainStatus;
     int lastAction;
+    float backgroundAverage;
+    float lastBasisWander;
+    float wander;
+    float jitter;
 } WifiSensingCalibrationProgress;
 
 DriverStatus wifiSensingInit(void);

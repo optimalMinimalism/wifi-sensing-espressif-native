@@ -36,11 +36,27 @@ static void logDiagnostics(const WifiSensingMeasurement *measurement)
 {
     ESP_LOGI(
         tag,
-        "diag state=%s calibrated=%d presence_ready=%d wander_raw=%.9f presence_avg=%.6f presence_threshold=%.6f applied_threshold=%.6f native_presence=%d",
+        "diag state=%s calibrated=%d presence_ready=%d wander_raw=%.9f presence_avg=%.9f presence_threshold=%.9f applied_threshold=%.9f native_presence=%d",
         stateName(measurement->state), measurement->calibrated, measurement->presenceReady,
         measurement->wander, measurement->presenceWanderAverage,
         measurement->presenceSomeoneThreshold, measurement->appliedPresenceThreshold,
         measurement->nativePresence);
+    ESP_LOGI(tag,
+             "diag_motion motion=%d jitter_raw=%.9f smooth_scaled=%u enter_scaled=%u exit_scaled=%u process_state=%d init_stage=%d",
+             measurement->motion, measurement->jitter,
+             (unsigned)measurement->motionSmoothScaled,
+             (unsigned)measurement->motionEnterLevelScaled,
+             (unsigned)measurement->motionExitLevelScaled,
+             measurement->motionProcessState, measurement->motionInitStage);
+    ESP_LOGI(tag,
+             "diag_train valid=%d status=%d action=%d samples=%u background=%u background_avg=%.9f basis_wander=%.9f wander_threshold=%.9f jitter_threshold=%.9f",
+             measurement->trainThresholdsValid, measurement->trainStatus,
+             measurement->trainLastAction, (unsigned)measurement->trainSampleCount,
+             (unsigned)measurement->trainBackgroundCount,
+             measurement->trainBackgroundAverage, measurement->trainLastBasisWander,
+             measurement->trainWanderThreshold, measurement->trainJitterThreshold);
+    ESP_LOGI(tag, "diag_link ap_info_valid=%d ap_rssi_dbm=%d ap_channel=%d",
+             measurement->apInfoValid, measurement->apRssi, measurement->apChannel);
 }
 
 static void sensingTaskRun(void *argument)

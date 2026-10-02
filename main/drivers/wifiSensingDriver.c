@@ -6,6 +6,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_mac.h"
+#include "esp_wifi.h"
 #include "esp_wifi_sensing.h"
 #include "wifiDriver.h"
 
@@ -143,6 +144,10 @@ DriverStatus wifiSensingCalibrationGetProgress(WifiSensingCalibrationProgress *p
     progress->backgroundCount = diagnostic.train_background_count;
     progress->trainStatus = diagnostic.train_status;
     progress->lastAction = diagnostic.train_last_action;
+    progress->backgroundAverage = diagnostic.train_background_avg;
+    progress->lastBasisWander = diagnostic.train_last_basis_wander;
+    progress->wander = diagnostic.wander_value;
+    progress->jitter = diagnostic.jitter_value;
     return DRIVER_OK;
 }
 
@@ -164,7 +169,7 @@ DriverStatus wifiSensingCalibrationStop(void)
         return statusFromEspErr(error);
     }
     calibrated = true;
-    ESP_LOGI(tag, "calibration completed (wander %.3f, jitter %.3f)",
+    ESP_LOGI(tag, "calibration completed (wander %.9f, jitter %.9f)",
              wanderThreshold, jitterThreshold);
     return DRIVER_OK;
 }
@@ -255,6 +260,24 @@ DriverStatus wifiSensingRead(WifiSensingMeasurement *measurement)
     measurement->presence = diagnostic.presence_ready && diagnostic.train_thresholds_valid &&
                             measurement->appliedPresenceThreshold > 0.0f &&
                             diagnostic.presence_wander_average > measurement->appliedPresenceThreshold;
+    measurement->motionSmoothScaled = diagnostic.smooth_scaled;
+    measurement->motionEnterLevelScaled = diagnostic.enter_level_scaled;
+    measurement->motionExitLevelScaled = diagnostic.exit_level_scaled;
+    measurement->motionProcessState = diagnostic.state;
+    measurement->motionInitStage = diagnostic.init_stage;
+    measurement->trainWanderThreshold = diagnostic.train_wander_threshold;
+    measurement->trainJitterThreshold = diagnostic.train_jitter_threshold;
+    measurement->trainThresholdsValid = diagnostic.train_thresholds_valid;
+    measurement->trainStatus = diagnostic.train_status;
+    measurement->trainLastAction = diagnostic.train_last_action;
+    measurement->trainSampleCount = diagnostic.train_sample_count;
+    measurement->trainBackgroundCount = diagnostic.train_background_count;
+    measurement->trainBackgroundAverage = diagnostic.train_background_avg;
+    measurement->trainLastBasisWander = diagnostic.train_last_basis_wander;
+    wifi_ap_record_t accessPoint = {0};
+    measurement->apInfoValid = esp_wifi_sta_get_ap_info(&accessPoint) == ESP_OK;
+    measurement->apRssi = measurement->apInfoValid ? accessPoint.rssi : 0;
+    measurement->apChannel = measurement->apInfoValid ? accessPoint.primary : 0;
     if (!measurement->calibrated ||
         diagnostic.init_stage != ESP_WIFI_SENSING_FSM_INIT_STAGE_STABLE) {
         measurement->state = WIFI_SENSING_UNKNOWN;

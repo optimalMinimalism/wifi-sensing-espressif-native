@@ -43,6 +43,12 @@ void app_main(void)
         }
 
         TickType_t elapsed = xTaskGetTickCount() - calibrationStarted;
+        ESP_LOGI(tag,
+                 "calibration elapsed_ms=%u samples=%u background=%u status=%d action=%d background_avg=%.9f basis_wander=%.9f wander_raw=%.9f jitter_raw=%.9f",
+                 (unsigned)pdTICKS_TO_MS(elapsed), (unsigned)progress.sampleCount,
+                 (unsigned)progress.backgroundCount, progress.trainStatus, progress.lastAction,
+                 progress.backgroundAverage, progress.lastBasisWander, progress.wander,
+                 progress.jitter);
         if (elapsed >= pdMS_TO_TICKS(SENSING_CALIBRATION_MS) && progress.sampleCount > 0 &&
             progress.backgroundCount > 0) {
             ESP_LOGI(tag, "calibration data ready: samples %u, background %u",
